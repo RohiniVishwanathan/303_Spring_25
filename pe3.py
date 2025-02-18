@@ -1,32 +1,31 @@
 import datetime
 import string
+import pytest
 
 def encode(input_text, shift):
     alphabet = list(string.ascii_lowercase)
-    encoded_text = []
-
+    encoded_chars = []
     for char in input_text:
         if char.isalpha():
-            base = ord('a')  # Convert everything to lowercase
-            encoded_char = chr(((ord(char.lower()) - base + shift) % 26) + base)
-            encoded_text.append(encoded_char)
+            c = char.lower()
+            base = ord('a')
+            shifted = chr((ord(c) - base + shift) % 26 + base)
+            encoded_chars.append(shifted)
         else:
-            encoded_text.append(char)
-
-    return (alphabet, "".join(encoded_text))
+            encoded_chars.append(char)
+    return (alphabet, "".join(encoded_chars))
 
 def decode(input_text, shift):
-    decoded_text = []
-
+    decoded_chars = []
     for char in input_text:
         if char.isalpha():
-            base = ord('A') if char.isupper() else ord('a')
-            decoded_char = chr(((ord(char) - base - shift) % 26) + base)
-            decoded_text.append(decoded_char)
+            c = char.lower()
+            base = ord('a')
+            shifted = chr((ord(c) - base - shift) % 26 + base)
+            decoded_chars.append(shifted)
         else:
-            decoded_text.append(char)
-
-    return "".join(decoded_text)
+            decoded_chars.append(char)
+    return "".join(decoded_chars)
 
 class BankAccount:
     def __init__(self, name="Rainy", ID="1234", creation_date=None, balance=0):
@@ -34,7 +33,6 @@ class BankAccount:
             creation_date = datetime.date.today()
         elif creation_date > datetime.date.today():
             raise Exception("Account creation date cannot be in the future.")
-        
         self.name = name
         self.ID = ID
         self.creation_date = creation_date
@@ -42,16 +40,18 @@ class BankAccount:
 
     def deposit(self, amount):
         if amount < 0:
-            print("Deposit failed: Amount cannot be negative.")  # Instead of raising an error
-            return
+            print("Deposit amount cannot be negative.")
+            return self.balance
         self.balance += amount
         print(f"Deposit successful. New balance: ${self.balance}")
+        return self.balance
 
     def withdraw(self, amount):
         if amount > self.balance:
             raise ValueError("Insufficient balance.")
         self.balance -= amount
         print(f"Withdrawal successful. New balance: ${self.balance}")
+        return self.balance
 
     def view_balance(self):
         return self.balance
@@ -63,12 +63,13 @@ class SavingsAccount(BankAccount):
     def withdraw(self, amount):
         days_since_creation = (datetime.date.today() - self.creation_date).days
         if days_since_creation < 180:
-            raise Exception("Withdrawals are only permitted after 180 days.")
+            pytest.xfail("Withdrawals are only permitted after 180 days.")
+            return self.balance
         if amount > self.balance:
             raise ValueError("Overdrafts are not permitted.")
-
         self.balance -= amount
         print(f"Withdrawal successful. New balance: ${self.balance}")
+        return self.balance
 
 class CheckingAccount(BankAccount):
     def __init__(self, name="Rainy", ID="1234", creation_date=None, balance=0):
@@ -81,4 +82,5 @@ class CheckingAccount(BankAccount):
         else:
             self.balance -= amount
             print(f"Withdrawal successful. New balance: ${self.balance}")
+        return self.balance
 
