@@ -7,8 +7,8 @@ def encode(input_text, shift):
 
     for char in input_text:
         if char.isalpha():
-            base = ord('A') if char.isupper() else ord('a')
-            encoded_char = chr(((ord(char) - base + shift) % 26) + base)
+            base = ord('a')  # Convert everything to lowercase
+            encoded_char = chr(((ord(char.lower()) - base + shift) % 26) + base)
             encoded_text.append(encoded_char)
         else:
             encoded_text.append(char)
