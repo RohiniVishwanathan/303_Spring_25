@@ -42,7 +42,8 @@ class BankAccount:
 
     def deposit(self, amount):
         if amount < 0:
-            raise ValueError("Deposit amount cannot be negative.")
+            print("Deposit failed: Amount cannot be negative.")  # Instead of raising an error
+            return
         self.balance += amount
         print(f"Deposit successful. New balance: ${self.balance}")
 
